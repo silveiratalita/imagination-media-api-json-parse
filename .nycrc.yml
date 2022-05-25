@@ -1,0 +1,12 @@
+all: true
+extension: [
+  '.js'
+]
+include: [
+  'src',
+]
+exclude: [
+  '**/*.spec.js',
+  '**/*router.js',
+  '**/*index.js',
+]

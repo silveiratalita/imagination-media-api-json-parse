@@ -1,0 +1,11 @@
+{
+  "watch": [
+    "src",
+    "env"
+  ],
+  "execMap": {
+    "js": "node -r dotenv/config src/index.js dotenv_config_path=./env/local.env",
+    "env": "node -r dotenv/config src/index.js dotenv_config_path=./env/local.env"
+  },
+  "ext": "js,env"
+}

@@ -1,0 +1,47 @@
+{
+  "name": "imagination-media-pi-test.",
+  "version": "0.0.1",
+  "description": "A Restful API",
+  "main": "src/index.js",
+  "repository": "",
+  "author": "silveiratalita",
+  "license": "MIT",
+  "scripts": {
+    "preinstall0": "npm install -g heroku",
+    "test": "jasmine",
+    "cover": "nyc --reporter=lcov jasmine",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "eslint src/** --ext .js --ignore-pattern src/key/*.pem",
+    "start": "node src/index.js",
+    "dev": "nodemon -r dotenv/config src/index.js dotenv_config_path=./env/local.env",
+    "predev": "yarn && yarn docker-up",
+    "docker-up": "docker-compose -f docker-compose-dev.yml up --build -d mongodb",
+    "docker-down": "docker-compose -f docker-compose-dev.yml down",
+    "dev:debug": "nodemon --inspect src/server.js"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.2",
+    "dotenv": "^8.0.0",
+    "eslint": "^8.1.0",
+    "eslint-config-google": "^0.13.0",
+    "eslint-config-prettier": "^6.0.0",
+    "jasmine": "^3.4.0",
+    "jasmine-spec-reporter": "^4.2.1",
+    "nodemon": "^2.0.14",
+    "nyc": "^15.1.0",
+    "prettier": "^1.18.2"
+  },
+  "files": [
+    "src/**/*"
+  ],
+  "dependencies": {
+    "adapter-mongoose-driver": "^1.0.0",
+    "ajv": "^8.6.2",
+    "body-parser": "^1.19.0",
+    "express": "^4.18.1",
+    "express-fileupload": "^1.3.1",
+    "imagination-media-xml-converter": "^0.0.1",
+    "mongoose": "^6.3.3",
+    "winston-cigarettes-logger": "^1.0.0"
+  }
+}

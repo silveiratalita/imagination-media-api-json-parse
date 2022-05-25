@@ -1,0 +1,185 @@
+[   {
+    "origin" : "",
+    "target" : "OrderHeader.OrderActionType",
+    "static":"A",
+    "convertion":""
+     },
+     {
+    "origin" : "extension_attributes.syspro_id",
+    "target" : "OrderHeader.Customer",
+    "static":"",
+    "convertion":""
+     },
+     {
+    "origin" : "created_at",
+    "target" : "OrderHeader.OrderDate",
+    "static":"",
+    "convertion":"Y-m-dd"
+     },
+       {
+    "origin" : "",
+    "target" : "OrderHeader.InvoiceTerms",
+    "static":"27",
+    "convertion":""
+     },
+        {
+    "origin" : "",
+    "target" : "OrderHeader.Currency",
+    "static":"$",
+    "convertion":""
+     },
+           {
+    "origin" : "",
+    "target" : "ShippingInstrs",
+    "static":"$",
+    "convertion":"Maximum of 40 characters"
+     },
+     {
+    "origin" : "extension_attributes.company_order_attributes.company_name",
+    "target" : "OrderHeader.CustomerName",
+    "static":"",
+    "convertion":"Maximum of 40 characters"
+     },
+    {
+    "origin" : "billing_address.street.0",
+    "target" : "OrderHeader.ShipAddress1",
+    "static":"",
+    "convertion":""
+     },
+    {
+    "origin" : "billing_address.street.1",
+    "target" : "OrderHeader.ShipAddress2",
+    "static":"",
+    "convertion":"Leave field empty if there's no second line on the street"
+     },
+      {
+    "origin" : "billing_address.city",
+    "target" : "OrderHeader.ShipAddress3",
+    "static":"",
+    "convertion":""
+     }, {
+    "origin" : "billing_address.region_code",
+    "target" : "OrderHeader.ShipAddress4",
+    "static":"",
+    "convertion":""
+     }, 
+     {
+    "origin" : "billing_address.postcode",
+    "target" : "OrderHeader.ShipPostalCode",
+    "static":"",
+    "convertion":""
+     }, {
+    "origin" : "customer_email",
+    "target" : "OrderHeader.Email",
+    "static":"",
+    "convertion":""
+     }, {
+    "origin" : "items.x",
+    "target" : "OrderDetails.StockLine.CustomerPoLine",
+    "static":"",
+    "convertion":"It's an incremental number"
+     }, {
+    "origin" : "items.x.sku",
+    "target" : "OrderDetails.StockLine.StockCode",
+    "static":"",
+    "convertion":""
+     }, {
+    "origin" : "items.x.extension_attributes.suggested_inventory_source",
+    "target" : "OrderDetails.StockLine.Warehouse",
+    "static":"",
+    "convertion":""
+     }, {
+    "origin" : "items.x.qty_ordered",
+    "target" : "OrderDetails.StockLine.OrderQty",
+    "static":"",
+    "convertion":""
+     }, {
+    "origin" : "items.x.extension_attributes.unit_of_measure",
+    "target" : "OrderDetails.StockLine.OrderUom",
+    "static":"",
+    "convertion":""
+     }, {
+    "origin" : "items.x.price",
+    "target" : "OrderDetails.StockLine.Price",
+    "static":"",
+    "convertion":""
+     }, {
+    "origin" : "items.x.extension_attributes.unit_of_measure_price",
+    "target" : "OrderDetails.StockLine.PriceUom",
+    "static":"",
+    "convertion":""
+     },
+     
+     {
+    "origin" : "",
+    "target" : "OrderDetails.StockLine.PriceCode",
+    "static":"",
+    "convertion":"TEST"
+     },
+      {
+    "origin" : "",
+    "target" : "OrderDetails.StockLine.AlwaysUsePriceEntered",
+    "static":"Y",
+    "convertion":""
+     },
+      {
+    "origin" : "",
+    "target" : "OrderDetails.StockLine.AlwaysUseDiscountEntered",
+    "static":"N",
+    "convertion":""
+     },
+     
+     
+     {
+    "origin" : "items.x.created_at",
+    "target" : "OrderDetails.StockLine.CustRequestDate",
+    "static":"",
+    "convertion":" "
+     }, {
+    "origin" : "extension_attributes.bold_order_comment",
+    "target" : "OrderDetails.CommentLine.CustomerPoLine",
+    "static":"",
+    "convertion":"It's an incremental number - Add CommentLine only if the extension_attributes.bold_order_comment is not empty"
+     }, {
+    "origin" : "extension_attributes.bold_order_comment",
+    "target" : "OrderDetails.CommentLine.CustomerPoLine",
+    "static":"",
+    "convertion":"It's an incremental number - Add CommentLine only if the extension_attributes.bold_order_comment is not empty"
+     }, {
+    "origin" : "extension_attributes.bold_order_comment",
+    "target" : "OrderDetails.CommentLine.LineActionType",
+    "static":"",
+    "convertion":"Add CommentLine only if the extension_attributes.bold_order_comment is not empty"
+     },
+     {
+    "origin" : "extension_attributes.bold_order_comment",
+    "target" : "OrderDetails.CommentLine.Comment",
+    "static":"",
+    "convertion":"Add CommentLine only if the extension_attributes.bold_order_comment is not empty"
+     },
+      {
+    "origin" : "",
+    "target" : "OrderDetails.FreightLine.CustomerPoLine",
+    "static":"",
+    "convertion":""
+     },
+      {
+    "origin" : "",
+    "target" : "OrderDetails.FreightLine.LineActionType",
+    "static":"A",
+    "convertion":""
+     },
+
+      {
+    "origin" : "shipping_amount",
+    "target" : "OrderDetails.FreightLine.FreightValue",
+    "static":"",
+    "convertion":""
+     },
+     {
+     "origin" : "",
+    "target" : "OrderDetails.FreightLine.FreightCost",
+    "static":"0",
+    "convertion":""
+     }
+]

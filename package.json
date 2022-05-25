@@ -40,8 +40,10 @@
     "body-parser": "^1.19.0",
     "express": "^4.18.1",
     "express-fileupload": "^1.3.1",
+    "express-xml-bodyparser": "^0.3.0",
     "imagination-media-xml-converter": "^0.0.1",
     "mongoose": "^6.3.3",
-    "winston-cigarettes-logger": "^1.0.0"
+    "winston-cigarettes-logger": "^1.0.0",
+    "xml": "^1.0.1"
   }
 }

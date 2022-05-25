@@ -29,9 +29,9 @@
     "convertion":""
      },
            {
-    "origin" : "",
-    "target" : "ShippingInstrs",
-    "static":"$",
+    "origin" : "shipping_description",
+    "target" : "OrderHeader.ShippingInstrs",
+    "static":"",
     "convertion":"Maximum of 40 characters"
      },
      {
@@ -139,12 +139,12 @@
     "origin" : "extension_attributes.bold_order_comment",
     "target" : "OrderDetails.CommentLine.CustomerPoLine",
     "static":"",
-    "convertion":"It's an incremental number - Add CommentLine only if the extension_attributes.bold_order_comment is not empty"
+    "convertion":"Add CommentLine only if the extension_attributes.bold_order_comment is not empty"
      }, {
     "origin" : "extension_attributes.bold_order_comment",
     "target" : "OrderDetails.CommentLine.CustomerPoLine",
     "static":"",
-    "convertion":"It's an incremental number - Add CommentLine only if the extension_attributes.bold_order_comment is not empty"
+    "convertion":"Add CommentLine only if the extension_attributes.bold_order_comment is not empty"
      }, {
     "origin" : "extension_attributes.bold_order_comment",
     "target" : "OrderDetails.CommentLine.LineActionType",
@@ -171,7 +171,7 @@
      },
 
       {
-    "origin" : "shipping_amount",
+    "origin" : "shipping_description",
     "target" : "OrderDetails.FreightLine.FreightValue",
     "static":"",
     "convertion":""

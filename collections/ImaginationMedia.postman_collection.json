@@ -1,0 +1,71 @@
+{
+	"info": {
+		"_postman_id": "7c148ea5-c6a9-454d-a00d-e37904b4c94f",
+		"name": "ImaginationMedia",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Insert rules",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[   {\n    \"origin\" : \"\",\n    \"target\" : \"OrderHeader.OrderActionType\",\n    \"static\":\"A\",\n    \"convertion\":\"\"\n     },\n     {\n    \"origin\" : \"extension_attributes.syspro_id\",\n    \"target\" : \"OrderHeader.Customer\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     },\n     {\n    \"origin\" : \"created_at\",\n    \"target\" : \"OrderHeader.OrderDate\",\n    \"static\":\"\",\n    \"convertion\":\"Y-m-dd\"\n     },\n       {\n    \"origin\" : \"\",\n    \"target\" : \"OrderHeader.InvoiceTerms\",\n    \"static\":\"27\",\n    \"convertion\":\"\"\n     },\n        {\n    \"origin\" : \"\",\n    \"target\" : \"OrderHeader.Currency\",\n    \"static\":\"$\",\n    \"convertion\":\"\"\n     },\n           {\n    \"origin\" : \"shipping_description\",\n    \"target\" : \"ShippingInstrs\",\n    \"static\":\"\",\n    \"convertion\":\"Maximum of 40 characters\"\n     },\n     {\n    \"origin\" : \"extension_attributes.company_order_attributes.company_name\",\n    \"target\" : \"OrderHeader.CustomerName\",\n    \"static\":\"\",\n    \"convertion\":\"Maximum of 40 characters\"\n     },\n    {\n    \"origin\" : \"billing_address.street.0\",\n    \"target\" : \"OrderHeader.ShipAddress1\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     },\n    {\n    \"origin\" : \"billing_address.street.1\",\n    \"target\" : \"OrderHeader.ShipAddress2\",\n    \"static\":\"\",\n    \"convertion\":\"Leave field empty if there's no second line on the street\"\n     },\n      {\n    \"origin\" : \"billing_address.city\",\n    \"target\" : \"OrderHeader.ShipAddress3\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     }, {\n    \"origin\" : \"billing_address.region_code\",\n    \"target\" : \"OrderHeader.ShipAddress4\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     }, \n     {\n    \"origin\" : \"billing_address.postcode\",\n    \"target\" : \"OrderHeader.ShipPostalCode\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     }, {\n    \"origin\" : \"customer_email\",\n    \"target\" : \"OrderHeader.Email\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     }, {\n    \"origin\" : \"items.x\",\n    \"target\" : \"OrderDetails.StockLine.CustomerPoLine\",\n    \"static\":\"\",\n    \"convertion\":\"It's an incremental number\"\n     }, {\n    \"origin\" : \"items.x.sku\",\n    \"target\" : \"OrderDetails.StockLine.StockCode\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     }, {\n    \"origin\" : \"items.x.extension_attributes.suggested_inventory_source\",\n    \"target\" : \"OrderDetails.StockLine.Warehouse\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     }, {\n    \"origin\" : \"items.x.qty_ordered\",\n    \"target\" : \"OrderDetails.StockLine.OrderQty\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     }, {\n    \"origin\" : \"items.x.extension_attributes.unit_of_measure\",\n    \"target\" : \"OrderDetails.StockLine.OrderUom\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     }, {\n    \"origin\" : \"items.x.price\",\n    \"target\" : \"OrderDetails.StockLine.Price\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     }, {\n    \"origin\" : \"items.x.extension_attributes.unit_of_measure_price\",\n    \"target\" : \"OrderDetails.StockLine.PriceUom\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     },\n     \n     {\n    \"origin\" : \"\",\n    \"target\" : \"OrderDetails.StockLine.PriceCode\",\n    \"static\":\"\",\n    \"convertion\":\"TEST\"\n     },\n      {\n    \"origin\" : \"\",\n    \"target\" : \"OrderDetails.StockLine.AlwaysUsePriceEntered\",\n    \"static\":\"Y\",\n    \"convertion\":\"\"\n     },\n      {\n    \"origin\" : \"\",\n    \"target\" : \"OrderDetails.StockLine.AlwaysUseDiscountEntered\",\n    \"static\":\"N\",\n    \"convertion\":\"\"\n     },\n     \n     \n     {\n    \"origin\" : \"items.x.created_at\",\n    \"target\" : \"OrderDetails.StockLine.CustRequestDate\",\n    \"static\":\"\",\n    \"convertion\":\" \"\n     }, {\n    \"origin\" : \"extension_attributes.bold_order_comment\",\n    \"target\" : \"OrderDetails.CommentLine.CustomerPoLine\",\n    \"static\":\"\",\n    \"convertion\":\"It's an incremental number - Add CommentLine only if the extension_attributes.bold_order_comment is not empty\"\n     }, {\n    \"origin\" : \"extension_attributes.bold_order_comment\",\n    \"target\" : \"OrderDetails.CommentLine.CustomerPoLine\",\n    \"static\":\"\",\n    \"convertion\":\"It's an incremental number - Add CommentLine only if the extension_attributes.bold_order_comment is not empty\"\n     }, {\n    \"origin\" : \"extension_attributes.bold_order_comment\",\n    \"target\" : \"OrderDetails.CommentLine.LineActionType\",\n    \"static\":\"\",\n    \"convertion\":\"Add CommentLine only if the extension_attributes.bold_order_comment is not empty\"\n     },\n     {\n    \"origin\" : \"extension_attributes.bold_order_comment\",\n    \"target\" : \"OrderDetails.CommentLine.Comment\",\n    \"static\":\"\",\n    \"convertion\":\"Add CommentLine only if the extension_attributes.bold_order_comment is not empty\"\n     },\n      {\n    \"origin\" : \"\",\n    \"target\" : \"OrderDetails.FreightLine.CustomerPoLine\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     },\n      {\n    \"origin\" : \"\",\n    \"target\" : \"OrderDetails.FreightLine.LineActionType\",\n    \"static\":\"A\",\n    \"convertion\":\"\"\n     },\n\n      {\n    \"origin\" : \"shipping_description\",\n    \"target\" : \"OrderDetails.FreightLine.FreightValue\",\n    \"static\":\"\",\n    \"convertion\":\"\"\n     },\n     {\n     \"origin\" : \"\",\n    \"target\" : \"OrderDetails.FreightLine.FreightCost\",\n    \"static\":\"0\",\n    \"convertion\":\"\"\n     }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3333/createNewRule",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"createNewRule"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "convert json file",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/talita/Documents/workspace/testes/imagination-media/api-converter-xml/order.json"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3333/convert",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"convert"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

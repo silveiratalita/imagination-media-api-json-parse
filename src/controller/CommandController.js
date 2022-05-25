@@ -1,5 +1,6 @@
 const fs = require('fs');
 const file = require('../../order1.json');
+var xml = require('xml');
 
 /** Command Controller Class */
 class CommandController {
@@ -64,8 +65,15 @@ throw new this._httpErrorBase(400, error.message);
 
 });
       });
-         const objectMapped = await this.mappingObject(file, rules);
-        res.send(objectMapped).status(201);
+        const objectMapped = await this.mappingObject(file, rules);
+        const converterd = await this._converter.getInstance(objectMapped);
+        const fileXml = require( '../../data.xml');
+        if (!fileXml) {
+          throw new this._httpErrorBase(400,'There is no Xml File.')
+        }
+        res.header('Content-Type', 'application/xml');
+        res.send(xml(fileXml)).status(200);
+
       } else {
         res.send('There is No Rule found. Check with admin to register new rules to conversion.')
       }
@@ -90,7 +98,7 @@ throw new this._httpErrorBase(400, error.message);
   async mappingObject(jsonData, rules) {
 
     try {
-      // const mapOrderJson = new Map(Object.entries(jsonData));
+      let customerPoline = 0;
       let SalesOrders = {
         Orders: {
           OrderHeader: {
@@ -128,11 +136,17 @@ throw new this._httpErrorBase(400, error.message);
         }
       };
     
+      function incrementCustomerPoline() {
+        customerPoline = customerPoline+1;
+        return customerPoline;
+      }
+
       function AtributeTarget(lentght, SalesOrders, targetSplited, attributed) {
         
         if (targetSplited[1] === 'StockLine') {
           return null;
         }
+         
         switch (lentght) {
         
           case 1:
@@ -141,13 +155,13 @@ throw new this._httpErrorBase(400, error.message);
             break;
 
           case 2:
-          
+         
             targetSplited[0] !== undefined ? SalesOrders.Orders[targetSplited[0]][targetSplited[1]] = attributed :
               SalesOrders.Orders.OrderHeader.targetAreSplited[1] = attributed;
             
             break;
           case 3:
-          
+         
             SalesOrders.Orders[targetSplited[0]][targetSplited[1]][targetSplited[2]] = attributed;
             
             break;
@@ -163,16 +177,14 @@ throw new this._httpErrorBase(400, error.message);
         let count = 0;
         if (splits[0] = 'items') {
         
-          if (count > jsonData.items.length) {
-            count + 1;
-          }
+         
           jsonData.items.map(e => {
             Object.entries(e).forEach(([key, value]) => {
 
               //MONTAR O OBJETO
               //SalesOrders.Orders.OrderDetails. 
               const StockLine = {
-                CustomerPoLine: count,
+                CustomerPoLine: incrementCustomerPoline(),
                 StockCode: e.sku ? e.sku : 'Not Found',
                 Warehouse: e.extension_attributes.suggested_inventory_source ? e.extension_attributes.suggested_inventory_source : null,
                 OrderQty: e.qty_ordered ? e.qty_ordered : null,
@@ -182,10 +194,9 @@ throw new this._httpErrorBase(400, error.message);
                 PriceCode: 'TEST',
                 AlwaysUsePriceEntered: 'Y',
                 AlwaysUseDiscountEntered: "N",
-                CustRequestDate: e.created_at ? e.created_at : null,
+                CustRequestDate: e.created_at ? e.created_at.split(" ")[0] : null,
               }
-              SalesOrders.Orders.OrderDetails.CommentLine.CustomerPoLine = jsonData.items.length++;
-              SalesOrders.Orders.OrderDetails.FreightLine.CustomerPoLine = jsonData.items.length + 2;
+             
               SalesOrders.Orders.OrderDetails.StockLine.push(StockLine);
             })
           }
@@ -194,11 +205,11 @@ throw new this._httpErrorBase(400, error.message);
         }
       }
         
-    
+      
       for (let i = 0; i <= rules.length; i++) {
 
         let targetSplited = [];
-        let targetAreSplited = [false, 0];
+        let targetAreSplited = [false,0];
 
         if (rules[i]) {
           targetSplited = rules[i].target.split('.');
@@ -210,19 +221,14 @@ throw new this._httpErrorBase(400, error.message);
 
         if (rules[i] && rules[i].origin === "") {
           if (targetAreSplited[0] = true) {
-            // SalesOrders.Orders[rules[i].target] = rules[i].static;
             AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, rules[i].static)
-             
           } else {
-            AtributeTarget(targetAreSplited[0], SalesOrders, targetSplited, rules[i].static)
-             
+            AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, rules[i].static)
           }
            
-          
         } else if ((rules[i] && rules[i].origin !== "")) {
 
           const splits = rules[i].origin.split('.');
-
            
           if (splits.length === 3) {
             (splits[0] === 'items' && targetAreSplited[0] == true && targetSplited[1] === 'StockLine') ? getFromItems(splits) :
@@ -231,16 +237,17 @@ throw new this._httpErrorBase(400, error.message);
               });
           }
           if (splits.length == 2) {
+           
             (splits[0] === 'items' && targetAreSplited[0] == true && targetSplited[1] === 'StockLine') ? getFromItems(splits, SalesOrders.Orders[rules[i].target], jsonData[splits[0]][splits[1]]) :
               Object.entries(jsonData).forEach(([key, value]) => {
-                AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[rules[i].origin])
+                AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[splits[0]][splits[1]])
             
               });
           }
           if (splits.length === 1) {
               
             Object.entries(jsonData).forEach(([key, value]) => {
-              AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[rules[i].origin])
+              AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[splits[0]])
             })
             console.log(splits)
           }
@@ -249,12 +256,20 @@ throw new this._httpErrorBase(400, error.message);
          
         }
         
+      
        
       }
+      SalesOrders.Orders.OrderDetails.CommentLine.CustomerPoLine = incrementCustomerPoline();
+      SalesOrders.Orders.OrderDetails.FreightLine.CustomerPoLine = incrementCustomerPoline();
+      let dateSplited = SalesOrders.Orders.OrderHeader.OrderDate.split(" ")[0];
+      SalesOrders.Orders.OrderHeader.OrderDate = dateSplited
+      let str = SalesOrders.Orders.OrderHeader.ShippingInstrs;
+      str=(str && str.length>40)?str.substr(0, 41):null
+      SalesOrders.Orders.OrderHeader.ShippingInstrs = str;
 
+      str = SalesOrders.Orders.OrderHeader.CustomerName;
+      str = (str && str.length>40) ? str.substr(0, 41) : null;
      
-    
-      
       return SalesOrders;
     } catch (e) {
        console.log(e)

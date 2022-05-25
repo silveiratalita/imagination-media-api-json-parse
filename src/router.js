@@ -8,7 +8,7 @@ const DatabaseHelper = require('./helper/DatabaseHelper');
 const config = require('../config/general');
 const queryController = require('./controller/QueryController');
 const Validator = require('../src/helper/Validator');
-
+ const xmlparser = require('express-xml-bodyparser');
 const commandController = require('./controller/CommandController');
 
 const httpErrorBase = require('./error/httpErrorBase');
@@ -31,7 +31,7 @@ const command = commandController(
 const query = queryController(databaseService);
 
 const router = express.Router();
-router.post('/convert', command.convertToXML.bind(command));
+router.post('/convert',xmlparser({trim: false, explicitArray: false}), command.convertToXML.bind(command));
 router.get('/health', query.health.bind(query));
 router.post('/createNewRule',command.insertNewFieldRule.bind(command))
 module.exports = {router};

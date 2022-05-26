@@ -46,7 +46,7 @@ class CommandController {
      * @param {*} next
      */
   async convertToXML(req, res, next) {
-       try {
+    try {
       const rules = await this._mongoDbService.indexAllRulles();
       if (rules.length > 0) {
         const fileName = req.files.file.name;
@@ -62,16 +62,14 @@ class CommandController {
           });
         });
         const objectMapped = await this.mappingObject(file, rules);
-        const converterd = await this._converter.getInstance({ SalesOrders: objectMapped });
-        
-     fs.readFile('data.xml', 'utf8', function (err,data) {
+        const converterd = await this._converter.getInstance({SalesOrders: objectMapped});
+
+        fs.readFile('data.xml', 'utf8', function(err, data) {
           if (err) {
             throw new this._httpErrorBase(400, err);
           }
           res.send(data).status(200);
-        });    
-      
-      
+        });
       } else {
         res.send('There is No Rule found. Check with admin to register new rules to conversion.');
       }
@@ -85,10 +83,6 @@ class CommandController {
       err.message = 'Internal server Error';
       return next(err);
     }
-
-
-
-
   }
 
   /**
@@ -135,12 +129,27 @@ class CommandController {
         },
       };
 
+      function convertionVerify(convertion, attribute) {
+        switch (convertion) {
+          case 'Y-m-dd':
+            return attribute.split(' ')[0];
+            break;
+          case 'Maximum of 40 characters':
+            return (attribute && attribute.length>40)?attribute.substr(0, 41):null;
+            break;
+          case 'Leave field empty if there\'s no second line on the street':
+            break;
+          case 'It\'s an incremental number':
+            return incrementCustomerPoline();
+            break;
+        }
+      }
       function incrementCustomerPoline() {
         customerPoline = customerPoline+1;
         return customerPoline;
       }
 
-      function AtributeTarget(lentght, SalesOrders, targetSplited, attributed) {
+      function AtributeTarget(lentght, SalesOrders, targetSplited, attributed, isConvertion) {
         if (targetSplited[1] === 'StockLine') {
           return null;
         }
@@ -153,18 +162,18 @@ class CommandController {
 
           case 2:
 
-            targetSplited[0] !== undefined ? SalesOrders.Orders[targetSplited[0]][targetSplited[1]] = attributed :
+            targetSplited[0] !== undefined ? SalesOrders.Orders[targetSplited[0]][targetSplited[1]] = isConvertion[0]?convertionVerify(isConvertion[1], attributed):attributed :
               SalesOrders.Orders.OrderHeader.targetSplited[1] = attributed;
 
             break;
           case 3:
 
-            SalesOrders.Orders[targetSplited[0]][targetSplited[1]][targetSplited[2]] = attributed;
+            SalesOrders.Orders[targetSplited[0]][targetSplited[1]][targetSplited[2]] = isConvertion[0]?convertionVerify(isConvertion[1], attributed):attributed;
 
             break;
           case 4:
 
-            SalesOrders.Orders[targetSplited[0]][targetSplited[1][targetSplited[2]]][targetSplited[3]] = attributed;
+            SalesOrders.Orders[targetSplited[0]][targetSplited[1][targetSplited[2]]][targetSplited[3]] = isConvertion[0]?convertionVerify(isConvertion[1], attributed):attributed;
 
             break;
         }
@@ -203,6 +212,7 @@ class CommandController {
       for (let i = 0; i <= rules.length; i++) {
         let targetSplited = [];
         let targetAreSplited = [false, 0];
+        let isConvertion = [];
 
         if (rules[i]) {
           targetSplited = rules[i].target.split('.');
@@ -210,13 +220,15 @@ class CommandController {
         if (targetSplited.length > 1) {
           targetAreSplited = [true, targetSplited.length];
         }
-
+        if (rules[i] && rules[i].convertion !== '') {
+          isConvertion = [true, (rules[i].convertion)];
+        }
 
         if (rules[i] && rules[i].origin === '') {
           if (targetAreSplited[0] = true) {
-            AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, rules[i].static);
+            AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, rules[i].static, isConvertion);
           } else {
-            AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, rules[i].static);
+            AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, rules[i].static, isConvertion);
           }
         } else if ((rules[i] && rules[i].origin !== '')) {
           const splits = rules[i].origin.split('.');
@@ -224,20 +236,19 @@ class CommandController {
           if (splits.length === 3) {
             (splits[0] === 'items' && targetAreSplited[0] == true && targetSplited[1] === 'StockLine') ? getFromItems(splits) :
               Object.entries(jsonData).forEach(([key, value]) => {
-                AtributeTarget(targetAreSplited[0], SalesOrders, targetSplited, jsonData[splits[0]][splits[1]][splits[2]]);
+                AtributeTarget(targetAreSplited[0], SalesOrders, targetSplited, jsonData[splits[0]][splits[1]][splits[2]], isConvertion);
               });
           }
           if (splits.length == 2) {
             (splits[0] === 'items' && targetAreSplited[0] == true && targetSplited[1] === 'StockLine') ? getFromItems(splits, SalesOrders.Orders[rules[i].target], jsonData[splits[0]][splits[1]]) :
               Object.entries(jsonData).forEach(([key, value]) => {
-                AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[splits[0]][splits[1]]);
+                AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[splits[0]][splits[1]], isConvertion);
               });
           }
           if (splits.length === 1) {
             Object.entries(jsonData).forEach(([key, value]) => {
-              AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[splits[0]]);
+              AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[splits[0]], isConvertion);
             });
-            console.log(splits);
           }
         }
       }

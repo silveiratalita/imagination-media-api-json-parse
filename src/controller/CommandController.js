@@ -154,7 +154,7 @@ class CommandController {
           case 2:
 
             targetSplited[0] !== undefined ? SalesOrders.Orders[targetSplited[0]][targetSplited[1]] = attributed :
-              SalesOrders.Orders.OrderHeader.targetAreSplited[1] = attributed;
+              SalesOrders.Orders.OrderHeader.targetSplited[1] = attributed;
 
             break;
           case 3:

@@ -32,8 +32,11 @@ This endpoint persist the data inside the mapp collection on MongoDB, if the dat
 ## How to Use
 
 To use the project and test endpoints you cam use the postman collection inside the collection directory, just import the collection and don't forget to attach the file 'order.json' into the field.
+
 ![screen shot](https://i.imgur.com/i40Q2x5.png)
+
 1.First run the request 'insert rules'
+
 2.Run the request 'convert json file', it must return the json converted into xml.
 
 # Explanation

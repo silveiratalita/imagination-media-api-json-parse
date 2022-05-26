@@ -40,8 +40,8 @@ The library https://github.com/silveiratalita/imagination-media-xml-converter is
 Thislibrary is agnostic and doesn't matter witch json we send, it return a XML.
 The package was published into my npm account, the same I published anopther librays tha I use to helpe me in another projects.
 
-The project is not finished becous for the time I had to delivery, between started and delivery, i lost a lot of time, including two trips I had to do, to the company where I work.
-The reqirements of project ar not completly satisfed in my pointo of viwe, becouse of this.
+The project is not finished because for the time I had to delivery, between started and delivery, I lost a lot of time, including two trips I had to do, to the company where I work.
+The reqirements of project ar not completly satisfied in my point of view, becouse of this.
 But the project are able to start, receive rules inside a standard and become the contract between applications easyer.
 Of courser we need to improve, becouse is just only a idea, for example, I need to to write a schema to validate the fields, validating all the inputs, for security adn to garantu the according of the data and the contract.
 I'll still improve it!

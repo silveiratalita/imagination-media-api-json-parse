@@ -6,7 +6,7 @@ class QueryController {
     if (!mongoDbService ) {
       throw new Error(`Invalid Constructor Args - ${mongoDbService}`);
     }
-    
+
     this._mongoDbService = mongoDbService;
   }
 
@@ -15,16 +15,14 @@ class QueryController {
    * @param {*} res Express response
    * @param {*} next Express next
    */
-   async health(req, res, next) {
+  async health(req, res, next) {
     try {
       res.send().status(200);
     } catch (e) {
       e.status = e.status || 500;
       return next(e);
     }
-  
-   }
-
+  }
 }
 
 module.exports = (mongoDbService) =>

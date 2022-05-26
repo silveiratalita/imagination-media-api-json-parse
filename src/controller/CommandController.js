@@ -1,6 +1,5 @@
 const fs = require('fs');
 const file = require('../../order1.json');
-var xml = require('xml');
 
 /** Command Controller Class */
 class CommandController {
@@ -9,17 +8,16 @@ class CommandController {
      * @param {schemaValidator} schemaValidator
      * @param {httpErrorBase} httpErrorBase return a httop error
      * @param {*} logger log app
-     * @param {*} converter imagination converter 
+     * @param {*} converter imagination converter
      * @param {*} mongoDbService mongodb
      */
   constructor(
-    schemaValidator,
-    httpErrorBase,
-    logger,
-    converter,
-    mongoDbService
+      schemaValidator,
+      httpErrorBase,
+      logger,
+      converter,
+      mongoDbService,
   ) {
-
     if (
       !schemaValidator ||
       !httpErrorBase ||
@@ -32,10 +30,9 @@ class CommandController {
       errorBase - ${httpErrorBase} 
       logger -  ${logger}
       converter =${converter}
-      mongodb- ${mongo}`);
-      
+      mongodb- ${mongoDbService}`);
     }
-    
+
     this._schemaValidator = schemaValidator;
     this._httpErrorBase = httpErrorBase;
     this._logger = logger;
@@ -49,36 +46,35 @@ class CommandController {
      * @param {*} next
      */
   async convertToXML(req, res, next) {
-  
-    try {
+       try {
       const rules = await this._mongoDbService.indexAllRulles();
       if (rules.length > 0) {
         const fileName = req.files.file.name;
-      fs.readFile(fileName, 'utf8', (err, data) => {
-        if (err) {
-          throw err;
-        }
-       
-        fs.writeFile('order1.json', data, (err) => {
-  if (err)
-throw new this._httpErrorBase(400, error.message);
+        fs.readFile(fileName, 'utf8', (err, data) => {
+          if (err) {
+            throw err;
+          }
 
-});
-      });
+          fs.writeFile('order1.json', data, (err) => {
+            if (err) {
+              throw new this._httpErrorBase(400, error.message);
+            }
+          });
+        });
         const objectMapped = await this.mappingObject(file, rules);
-        const converterd = await this._converter.getInstance(objectMapped);
-        const fileXml = require( '../../data.xml');
-        if (!fileXml) {
-          throw new this._httpErrorBase(400,'There is no Xml File.')
-        }
-        res.header('Content-Type', 'application/xml');
-        res.send(xml(fileXml)).status(200);
-
-      } else {
-        res.send('There is No Rule found. Check with admin to register new rules to conversion.')
-      }
-    
+        const converterd = await this._converter.getInstance({ SalesOrders: objectMapped });
+        
+     fs.readFile('data.xml', 'utf8', function (err,data) {
+          if (err) {
+            throw new this._httpErrorBase(400, err);
+          }
+          res.send(data).status(200);
+        });    
       
+      
+      } else {
+        res.send('There is No Rule found. Check with admin to register new rules to conversion.');
+      }
     } catch (err) {
       this._logger.error(`[Convert Service] ${err}`);
 
@@ -89,17 +85,20 @@ throw new this._httpErrorBase(400, error.message);
       err.message = 'Internal server Error';
       return next(err);
     }
+
+
+
+
   }
 
-   /**
-   * @param {*} jsonData Json 
-   * @param {*} Rules Rules  
+  /**
+   * @param {*} jsonData Json
+   * @param {*} Rules Rules
    */
   async mappingObject(jsonData, rules) {
-
     try {
       let customerPoline = 0;
-      let SalesOrders = {
+      const SalesOrders = {
         Orders: {
           OrderHeader: {
             OrderActionType: null,
@@ -122,67 +121,62 @@ throw new this._httpErrorBase(400, error.message);
               CustomerPoLine: null,
               LineActionType: null,
               Comment: null,
-            
+
             },
             FreightLine: {
               CustomerPoLine: null,
               LineActionType: null,
               FreightValue: null,
-              FreightCost: null
-            }
-          
-          
-          }
-        }
+              FreightCost: null,
+            },
+
+
+          },
+        },
       };
-    
+
       function incrementCustomerPoline() {
         customerPoline = customerPoline+1;
         return customerPoline;
       }
 
       function AtributeTarget(lentght, SalesOrders, targetSplited, attributed) {
-        
         if (targetSplited[1] === 'StockLine') {
           return null;
         }
-         
+
         switch (lentght) {
-        
           case 1:
             SalesOrders.Orders.targetSplited[0] = attributed;
 
             break;
 
           case 2:
-         
+
             targetSplited[0] !== undefined ? SalesOrders.Orders[targetSplited[0]][targetSplited[1]] = attributed :
               SalesOrders.Orders.OrderHeader.targetAreSplited[1] = attributed;
-            
+
             break;
           case 3:
-         
+
             SalesOrders.Orders[targetSplited[0]][targetSplited[1]][targetSplited[2]] = attributed;
-            
+
             break;
           case 4:
-           
-            SalesOrders.Orders[targetSplited[0]][targetSplited[1][targetSplited[2]]][targetSplited[3]] = attributed
-           
+
+            SalesOrders.Orders[targetSplited[0]][targetSplited[1][targetSplited[2]]][targetSplited[3]] = attributed;
+
             break;
         }
       }
-    
-      function getFromItems(splits) {
-        let count = 0;
-        if (splits[0] = 'items') {
-        
-         
-          jsonData.items.map(e => {
-            Object.entries(e).forEach(([key, value]) => {
 
-              //MONTAR O OBJETO
-              //SalesOrders.Orders.OrderDetails. 
+      function getFromItems(splits) {
+        const count = 0;
+        if (splits[0] = 'items') {
+          jsonData.items.map((e) => {
+            Object.entries(e).forEach(([key, value]) => {
+              // MONTAR O OBJETO
+              // SalesOrders.Orders.OrderDetails.
               const StockLine = {
                 CustomerPoLine: incrementCustomerPoline(),
                 StockCode: e.sku ? e.sku : 'Not Found',
@@ -193,23 +187,22 @@ throw new this._httpErrorBase(400, error.message);
                 PriceUom: e.extension_attributes.unit_of_measure_price ? e.extension_attributes.unit_of_measure_price : null,
                 PriceCode: 'TEST',
                 AlwaysUsePriceEntered: 'Y',
-                AlwaysUseDiscountEntered: "N",
-                CustRequestDate: e.created_at ? e.created_at.split(" ")[0] : null,
-              }
-             
+                AlwaysUseDiscountEntered: 'N',
+                CustRequestDate: e.created_at ? e.created_at.split(' ')[0] : null,
+              };
+
               SalesOrders.Orders.OrderDetails.StockLine.push(StockLine);
-            })
-          }
-      
-          )
+            });
+          },
+
+          );
         }
       }
-        
-      
-      for (let i = 0; i <= rules.length; i++) {
 
+
+      for (let i = 0; i <= rules.length; i++) {
         let targetSplited = [];
-        let targetAreSplited = [false,0];
+        let targetAreSplited = [false, 0];
 
         if (rules[i]) {
           targetSplited = rules[i].target.split('.');
@@ -219,17 +212,15 @@ throw new this._httpErrorBase(400, error.message);
         }
 
 
-        if (rules[i] && rules[i].origin === "") {
+        if (rules[i] && rules[i].origin === '') {
           if (targetAreSplited[0] = true) {
-            AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, rules[i].static)
+            AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, rules[i].static);
           } else {
-            AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, rules[i].static)
+            AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, rules[i].static);
           }
-           
-        } else if ((rules[i] && rules[i].origin !== "")) {
-
+        } else if ((rules[i] && rules[i].origin !== '')) {
           const splits = rules[i].origin.split('.');
-           
+
           if (splits.length === 3) {
             (splits[0] === 'items' && targetAreSplited[0] == true && targetSplited[1] === 'StockLine') ? getFromItems(splits) :
               Object.entries(jsonData).forEach(([key, value]) => {
@@ -237,71 +228,59 @@ throw new this._httpErrorBase(400, error.message);
               });
           }
           if (splits.length == 2) {
-           
             (splits[0] === 'items' && targetAreSplited[0] == true && targetSplited[1] === 'StockLine') ? getFromItems(splits, SalesOrders.Orders[rules[i].target], jsonData[splits[0]][splits[1]]) :
               Object.entries(jsonData).forEach(([key, value]) => {
-                AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[splits[0]][splits[1]])
-            
+                AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[splits[0]][splits[1]]);
               });
           }
           if (splits.length === 1) {
-              
             Object.entries(jsonData).forEach(([key, value]) => {
-              AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[splits[0]])
-            })
-            console.log(splits)
+              AtributeTarget(targetAreSplited[1], SalesOrders, targetSplited, jsonData[splits[0]]);
+            });
+            console.log(splits);
           }
-              
-               
-         
         }
-        
-      
-       
       }
       SalesOrders.Orders.OrderDetails.CommentLine.CustomerPoLine = incrementCustomerPoline();
       SalesOrders.Orders.OrderDetails.FreightLine.CustomerPoLine = incrementCustomerPoline();
-      let dateSplited = SalesOrders.Orders.OrderHeader.OrderDate.split(" ")[0];
-      SalesOrders.Orders.OrderHeader.OrderDate = dateSplited
+
+      const dateSplited = SalesOrders.Orders.OrderHeader.OrderDate.split(' ')[0];
+      SalesOrders.Orders.OrderHeader.OrderDate = dateSplited;
       let str = SalesOrders.Orders.OrderHeader.ShippingInstrs;
-      str=(str && str.length>40)?str.substr(0, 41):null
+      str=(str && str.length>40)?str.substr(0, 41):null;
       SalesOrders.Orders.OrderHeader.ShippingInstrs = str;
 
       str = SalesOrders.Orders.OrderHeader.CustomerName;
       str = (str && str.length>40) ? str.substr(0, 41) : null;
-     
+
       return SalesOrders;
     } catch (e) {
-       console.log(e)
+      console.log(e);
       throw new this._httpErrorBase(400, e.message);
     }
-  
   }
   /**
    * @param {*} req Express request
    * @param {*} res Express response
    * @param {*} next Express next
    */
-   async insertNewFieldRule(req, res, next) {
-     try {
-     
-       //validar objetos require
-       let objectSaved = [];
+  async insertNewFieldRule(req, res, next) {
+    try {
+      // validar objetos require
+      const objectSaved = [];
 
-       for (let i = 0; i < req.body.length; i++){
-         const objetcExist = await this._mongoDbService.findRuleConvertion(req.body[i].origin, req.body[i].conversion);
-         if (objetcExist == false) {
-           const ruleSaved = await this._mongoDbService.createRule(req.body[i]);
-           objectSaved.push(ruleSaved)
-         }          
-       
-       }
+      for (let i = 0; i < req.body.length; i++) {
+        const objetcExist = await this._mongoDbService.findRuleConvertion(req.body[i].origin, req.body[i].conversion);
+        if (objetcExist == false) {
+          const ruleSaved = await this._mongoDbService.createRule(req.body[i]);
+          objectSaved.push(ruleSaved);
+        }
+      }
       res.send(objectSaved.length>1?objectSaved:'No rule to change' ).status(200);
-     } catch (e) {
-       console.log(e)
+    } catch (e) {
+      console.log(e);
       throw new this._httpErrorBase(400, e.message);
     }
-  
   }
   /**
      * @param {Object} schema
@@ -315,24 +294,22 @@ throw new this._httpErrorBase(400, error.message);
       throw new this._httpErrorBase(400, error.message);
     }
   }
-
- 
 }
 
 
 module.exports = (
-    
+
     schemaValidator,
     httpErrorBase,
     logger,
     converter,
-    mongoDbService
+    mongoDbService,
 
 ) =>
   new CommandController(
-     schemaValidator,
-    httpErrorBase,
-    logger,
-    converter,
-    mongoDbService
+      schemaValidator,
+      httpErrorBase,
+      logger,
+      converter,
+      mongoDbService,
   );

@@ -70,7 +70,7 @@ class MongoDbService {
 
   /**
      * Build model by schema
-     * @param {*} mappObject User to save
+     * @param {*} mappObject rule to save
      */
   async createRule(mappObject) {
     const conn = await this._instanceMongoDb.getConnection();
@@ -85,10 +85,10 @@ class MongoDbService {
      * @param {*} origin origin to find
      * @param {*} convertion origin to find
      */
-  async findRuleConvertion(origin,convertion) {
+  async findRuleConvertion(origin, convertion) {
     const conn = await this._instanceMongoDb.getConnection();
     const MappModel = await this._buildModel(conn, schemas.mapp);
-    const ruleFound = await MappModel.findOne({ oigin: origin, convertion: convertion });
+    const ruleFound = await MappModel.findOne({oigin: origin, convertion: convertion});
     if (ruleFound === null) {
       return false;
     } else {
